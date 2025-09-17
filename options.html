@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highlighter Options</title>
+    <link rel="stylesheet" href="options.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <img src="images/icon48.png" alt="Extension Icon" class="logo">
+            <h1>Row Highlighter Settings</h1>
+        </header>
+        <main class="main-content">
+            <div class="setting-card">
+                <div class="setting-info">
+                    <h2>Enable Row Highlighting</h2>
+                    <p>Highlight specific rows in the data grid based on DG status.</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-highlighting-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+             <div class="setting-card">
+                <div class="setting-info">
+                    <h2>Reposition Notes Box</h2>
+                    <p>Move the notes box to appear under the Tax ID box.</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-repositioning-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+             <div class="setting-card">
+                <div class="setting-info">
+                    <h2>Highlight Populated Notes</h2>
+                    <p>Apply a style to the notes box when it contains text.</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-notes-highlight-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </main>
+        <footer class="footer">
+            <p>Piyovi Row Highlighter v1.0</p>
+        </footer>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>
+
