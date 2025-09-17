@@ -2,12 +2,19 @@
 // This script handles loading and saving the user's preferences.
 
 document.addEventListener('DOMContentLoaded', () => {
+    const darkModeToggle = document.getElementById('enable-dark-mode-toggle');
     const highlightingToggle = document.getElementById('enable-highlighting-toggle');
     const notesHighlightToggle = document.getElementById('enable-notes-highlight-toggle');
     const repositioningToggle = document.getElementById('enable-repositioning-toggle');
 
     // 1. Load the saved preferences when the options page is opened.
-    chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled'], (data) => {
+    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled'], (data) => {
+        // Set state for the dark mode toggle.
+        if (data.isDarkModeEnabled) {
+            darkModeToggle.checked = true;
+            document.body.classList.add('dark-mode');
+        }
+
         // Set state for the main highlighting toggle.
         highlightingToggle.checked = data.isHighlightingEnabled !== false;
 
@@ -18,7 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
         repositioningToggle.checked = data.isRepositioningEnabled !== false;
     });
 
-    // 2. Add an event listener to the main toggle.
+    // 2. Add an event listener to the dark mode toggle.
+    darkModeToggle.addEventListener('change', () => {
+        const isEnabled = darkModeToggle.checked;
+        document.body.classList.toggle('dark-mode', isEnabled);
+        chrome.storage.sync.set({ isDarkModeEnabled: isEnabled }, () => {
+            console.log('Dark mode preference saved:', isEnabled);
+        });
+    });
+
+    // 3. Add an event listener to the main toggle.
     highlightingToggle.addEventListener('change', () => {
         const isEnabled = highlightingToggle.checked;
         chrome.storage.sync.set({ isHighlightingEnabled: isEnabled }, () => {
