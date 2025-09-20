@@ -107,11 +107,28 @@ const stylePopulatedNotes = () => {
 };
 
 /**
- * Sets up a MutationObserver to watch for changes in the DOM.
- * This is crucial for dynamic web applications where content is loaded asynchronously.
- * The observer will trigger our modification functions whenever new nodes are added.
+ * Makes the "Pack all" button more prominent and hides other packing-related buttons.
  */
-const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled) => {
+const prominentPackAll = () => {
+    const packAllButton = document.querySelector('button[ngbtooltip="Pack all"]');
+    if (packAllButton) {
+        // Make the "Pack all" button bigger and more prominent.
+        packAllButton.classList.remove('btn-sm', 'btn-outline-secondary');
+        packAllButton.classList.add('btn-lg', 'btn-primary');
+
+        // Find the parent fieldset to locate sibling buttons.
+        const fieldset = packAllButton.closest('fieldset');
+        if (fieldset) {
+            // Hide other buttons within the same fieldset.
+            const buttonsToHide = fieldset.querySelectorAll('button:not([ngbtooltip="Pack all"])');
+            buttonsToHide.forEach(button => {
+                button.style.display = 'none';
+            });
+        }
+    }
+};
+
+const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled) => {
     // The MutationObserver will watch for changes in the entire document body.
     const targetNode = document.body;
 
@@ -133,6 +150,9 @@ const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, rep
                 if (notesHighlightingEnabled) {
                     stylePopulatedNotes();
                 }
+                if (packAllProminentEnabled) {
+                    prominentPackAll();
+                }
                 // We only need to run this once per batch of mutations, so we can break.
                 break;
             }
@@ -149,11 +169,12 @@ const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, rep
 
 // Main execution block for the content script.
 // First, check the stored setting to see if the features are enabled.
-chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled'], (data) => {
+chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent'], (data) => {
     // Determine if each feature is enabled, defaulting to true if not set.
     const rowHighlightingEnabled = data.isHighlightingEnabled !== false;
     const notesHighlightingEnabled = data.isNotesHighlightEnabled !== false;
     const repositioningEnabled = data.isRepositioningEnabled !== false;
+    const packAllProminentEnabled = data.isPackAllProminent !== false;
 
 
     // Run initial functions based on settings.
@@ -166,17 +187,20 @@ chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'is
     if (notesHighlightingEnabled) {
         stylePopulatedNotes();
     }
+    if (packAllProminentEnabled) {
+        prominentPackAll();
+    }
 
     // Only set up the observer if at least one feature is active.
-    if (rowHighlightingEnabled || notesHighlightingEnabled || repositioningEnabled) {
-        observeDOMChanges(rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled);
+    if (rowHighlightingEnabled || notesHighlightingEnabled || repositioningEnabled || packAllProminentEnabled) {
+        observeDOMChanges(rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled);
     }
 });
 
 // Listen for changes from the options page.
 // If the user toggles a feature, this will reload the page to apply/remove the modifications.
 chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === 'sync' && (changes.isHighlightingEnabled || changes.isNotesHighlightEnabled || changes.isRepositioningEnabled)) {
+    if (namespace === 'sync' && (changes.isHighlightingEnabled || changes.isNotesHighlightEnabled || changes.isRepositioningEnabled || changes.isPackAllProminent)) {
         window.location.reload();
     }
 });
