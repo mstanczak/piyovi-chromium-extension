@@ -1,11 +1,16 @@
 .prominent-pack-all {
     padding: 10px 20px;
     font-size: 1.25rem;
-    transition: all 0.2s ease-in-out;
+    background-color: white;
+    color: #212529;
+    border: 2px solid #212529;
+    border-radius: 5px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .prominent-pack-all:hover {
-    background-color: #0056b3; /* A darker blue for hover */
-    border-color: #004085;
-    transform: translateY(-2px); /* A slight lift effect */
+    background-color: #212529;
+    color: white;
+    border-color: #212529;
+    transform: scale(1.02);
 }
