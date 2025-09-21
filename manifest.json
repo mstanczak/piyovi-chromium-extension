@@ -18,6 +18,9 @@
       "matches": [
         "https://*.piyovi.io/*"
       ],
+      "css": [
+        "custom_styles.css"
+      ],
       "js": [
         "content.js"
       ],
