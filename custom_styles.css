@@ -1,16 +1,21 @@
 .prominent-pack-all {
     padding: 10px 20px;
     font-size: 1.25rem;
-    background-color: white;
-    color: #212529;
-    border: 2px solid #212529;
+    background-color: var(--bs-white);
+    color: var(--bs-theme-primary);
+    border: 2px solid var(--bs-theme-primary);
     border-radius: 5px;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .prominent-pack-all:hover {
-    background-color: #212529;
-    color: white;
-    border-color: #212529;
+    background-color: var(--bs-theme-primary);
+    color: var(--bs-white);
+    border-color: var(--bs-theme-primary);
     transform: scale(1.02);
+}
+
+/* This is needed to make sure the icon inside the button also changes color */
+.prominent-pack-all:hover .far {
+    color: var(--bs-white);
 }
