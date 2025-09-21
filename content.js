@@ -113,7 +113,7 @@ const prominentPackAll = () => {
     const packAllButton = document.querySelector('button[ngbtooltip="Pack all"]');
     if (packAllButton) {
         // Make the "Pack all" button bigger and more prominent.
-        packAllButton.classList.remove('btn-sm', 'btn-outline-secondary', 'btn-primary');
+        packAllButton.classList.remove('btn-sm', 'btn-outline-secondary');
         packAllButton.classList.add('prominent-pack-all');
 
         // Find the parent fieldset to locate sibling buttons.
