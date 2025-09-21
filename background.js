@@ -6,7 +6,8 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({
     isHighlightingEnabled: true,
     isNotesHighlightEnabled: true,
-    isRepositioningEnabled: true
+    isRepositioningEnabled: true,
+    isPackAllProminent: true,
+    isAutoPackEnabled: false // Default new feature to off
   });
 });
-
