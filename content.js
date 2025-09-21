@@ -128,7 +128,42 @@ const prominentPackAll = () => {
     }
 };
 
-const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled) => {
+/**
+ * Automatically clicks the "Pack all" button when conditions are met.
+ * This is triggered when a package's items are loaded into the product grid,
+ * but before they have been packed into the package grid below it.
+ */
+const autoPackAll = () => {
+    // Select the "Pack all" button.
+    const packAllButton = document.querySelector('button[ngbtooltip="Pack all"]');
+
+    // Find the product grid (top) and package grid (bottom).
+    const productGrid = document.querySelector('.tms-shipment-product');
+    const packageGrid = document.querySelector('.py-shipment-package-grid');
+
+    if (!packAllButton || !productGrid || !packageGrid) {
+        // If essential elements aren't on the page, do nothing.
+        return;
+    }
+
+    // Check for data rows in the product grid (top grid).
+    const productGridRows = productGrid.querySelectorAll('.ag-row:not(.ag-row-pinned)');
+
+    // Check for data rows in the package grid (bottom grid).
+    const packageGridRows = packageGrid.querySelectorAll('.ag-row:not(.ag-row-pinned)');
+
+    // Conditions to trigger the click:
+    // 1. The "Pack all" button must be present.
+    // 2. The product grid must have items.
+    // 3. The package grid must be empty (meaning we haven't packed yet).
+    if (packAllButton && productGridRows.length > 0 && packageGridRows.length === 0) {
+        console.log('Piyovi Enhancement Suite: Auto-clicking "Pack all".');
+        packAllButton.click();
+    }
+};
+
+
+const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled, autoPackEnabled) => {
     // The MutationObserver will watch for changes in the entire document body.
     const targetNode = document.body;
 
@@ -153,6 +188,9 @@ const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, rep
                 if (packAllProminentEnabled) {
                     prominentPackAll();
                 }
+                if (autoPackEnabled) {
+                    autoPackAll();
+                }
                 // We only need to run this once per batch of mutations, so we can break.
                 break;
             }
@@ -169,12 +207,13 @@ const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, rep
 
 // Main execution block for the content script.
 // First, check the stored setting to see if the features are enabled.
-chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent'], (data) => {
-    // Determine if each feature is enabled, defaulting to true if not set.
+chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled'], (data) => {
+    // Determine if each feature is enabled, defaulting to true/false as appropriate.
     const rowHighlightingEnabled = data.isHighlightingEnabled !== false;
     const notesHighlightingEnabled = data.isNotesHighlightEnabled !== false;
     const repositioningEnabled = data.isRepositioningEnabled !== false;
     const packAllProminentEnabled = data.isPackAllProminent !== false;
+    const autoPackEnabled = !!data.isAutoPackEnabled; // Default to false
 
 
     // Run initial functions based on settings.
@@ -192,16 +231,15 @@ chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'is
     }
 
     // Only set up the observer if at least one feature is active.
-    if (rowHighlightingEnabled || notesHighlightingEnabled || repositioningEnabled || packAllProminentEnabled) {
-        observeDOMChanges(rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled);
+    if (rowHighlightingEnabled || notesHighlightingEnabled || repositioningEnabled || packAllProminentEnabled || autoPackEnabled) {
+        observeDOMChanges(rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled, autoPackEnabled);
     }
 });
 
 // Listen for changes from the options page.
 // If the user toggles a feature, this will reload the page to apply/remove the modifications.
 chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === 'sync' && (changes.isHighlightingEnabled || changes.isNotesHighlightEnabled || changes.isRepositioningEnabled || changes.isPackAllProminent)) {
+    if (namespace === 'sync' && (changes.isHighlightingEnabled || changes.isNotesHighlightEnabled || changes.isRepositioningEnabled || changes.isPackAllProminent || changes.isAutoPackEnabled)) {
         window.location.reload();
     }
 });
-
