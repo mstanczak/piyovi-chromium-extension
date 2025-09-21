@@ -1,21 +1,35 @@
+/* CSS Variables are assumed to be available from the host page (piyovi.io).
+  This stylesheet applies new styling to the "Pack all" button.
+*/
+
+/* * Button Styling 
+ */
 .prominent-pack-all {
-    padding: 10px 20px;
-    font-size: 1.25rem;
-    background-color: var(--bs-white);
-    color: var(--bs-theme-primary);
-    border: 2px solid var(--bs-theme-primary);
-    border-radius: 5px;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Remove default button styles and add !important to override host styles */
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    
+    /* Set styling for the button's initial state with !important */
+    background-color: var(--bs-white, #fff) !important;
+    border: 2px solid var(--bs-gray-800, #343a40) !important;
+    color: var(--bs-gray-800, #343a40) !important;
+    
+    /* Sizing and Shape */
+    padding: 0.75rem 2.5rem !important; /* Increased horizontal padding */
+    border-radius: .375rem !important; /* Matches var(--bs-border-radius) */
+    font-size: 1.5rem !important; /* Icon size */
+    line-height: 1 !important; /* Ensures icon is vertically centered */
+    cursor: pointer !important;
+    
+    /* The transition property creates the smooth hover effect */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
+/* * Button Hover State 
+ */
 .prominent-pack-all:hover {
-    background-color: var(--bs-theme-primary);
-    color: var(--bs-white);
-    border-color: var(--bs-theme-primary);
-    transform: scale(1.02);
+    /* Change background and icon color on hover with !important */
+    background-color: var(--bs-gray-800, #343a40) !important;
+    color: var(--bs-white, #fff) !important;
 }
 
-/* This is needed to make sure the icon inside the button also changes color */
-.prominent-pack-all:hover .far {
-    color: var(--bs-white);
-}
