@@ -6,9 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const highlightingToggle = document.getElementById('enable-highlighting-toggle');
     const notesHighlightToggle = document.getElementById('enable-notes-highlight-toggle');
     const repositioningToggle = document.getElementById('enable-repositioning-toggle');
+    const packAllToggle = document.getElementById('enable-pack-all-toggle');
 
     // 1. Load the saved preferences when the options page is opened.
-    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled'], (data) => {
+    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent'], (data) => {
         // Set state for the dark mode toggle.
         if (data.isDarkModeEnabled) {
             darkModeToggle.checked = true;
@@ -23,6 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set state for the new repositioning toggle.
         repositioningToggle.checked = data.isRepositioningEnabled !== false;
+
+        // Set state for the pack all toggle.
+        packAllToggle.checked = data.isPackAllProminent !== false;
     });
 
     // 2. Add an event listener to the dark mode toggle.
@@ -55,6 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEnabled = repositioningToggle.checked;
         chrome.storage.sync.set({ isRepositioningEnabled: isEnabled }, () => {
             console.log('Repositioning preference saved:', isEnabled);
+        });
+    });
+
+    // 5. Add an event listener for the pack all toggle.
+    packAllToggle.addEventListener('change', () => {
+        const isEnabled = packAllToggle.checked;
+        chrome.storage.sync.set({ isPackAllProminent: isEnabled }, () => {
+            console.log('Prominent pack all preference saved:', isEnabled);
         });
     });
 });

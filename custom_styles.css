@@ -1,0 +1,11 @@
+.prominent-pack-all {
+    padding: 10px 20px;
+    font-size: 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.prominent-pack-all:hover {
+    background-color: #0056b3; /* A darker blue for hover */
+    border-color: #004085;
+    transform: translateY(-2px); /* A slight lift effect */
+}
