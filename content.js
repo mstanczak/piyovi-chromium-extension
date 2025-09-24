@@ -166,11 +166,8 @@ const autoPackAll = () => {
  * Populates the phone number field with a default value if the carrier is UPS and the field is empty.
  */
 const populateUpsPhoneNumber = (defaultPhoneNumber) => {
-    // Find the carrier input field. It's an input inside a div with class 'ng-input'.
-    const carrierInput = document.querySelector('.ng-input input[aria-autocomplete="list"]');
-
-    // The carrier name is often in the first span inside the combobox, if a selection has been made.
-    const carrierDisplay = document.querySelector('div[role="combobox"] .ng-value-label');
+    // Use a specific selector for the carrier's displayed value.
+    const carrierDisplay = document.querySelector('ng-select[formcontrolname="CompanyCarrier_Id"] .ng-value-label');
 
     // Check if the displayed carrier is 'UPS'.
     if (carrierDisplay && carrierDisplay.textContent.trim() === 'UPS') {
@@ -183,6 +180,7 @@ const populateUpsPhoneNumber = (defaultPhoneNumber) => {
             phoneInput.value = defaultPhoneNumber;
 
             // Dispatch an 'input' event to ensure Angular recognizes the change.
+            // This is crucial for frameworks like Angular to detect the programmatic change.
             const event = new Event('input', { bubbles: true });
             phoneInput.dispatchEvent(event);
         }
