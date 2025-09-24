@@ -39,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set the value for the UPS phone number input.
         upsPhoneNumberInput.value = data.upsPhoneNumber || "111-111-1111";
+
+        // Toggle the visibility of the custom phone container based on the saved state.
+        toggleCustomPhoneContainer();
     });
 
     // 2. Add an event listener to the dark mode toggle.
@@ -96,7 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.sync.set({ isUpsPhoneEnabled: isEnabled }, () => {
             console.log('UPS phone preference saved:', isEnabled);
         });
+        toggleCustomPhoneContainer();
     });
+
+    function toggleCustomPhoneContainer() {
+        const container = document.getElementById('custom-ups-phone-container');
+        container.style.display = upsPhoneToggle.checked ? 'flex' : 'none';
+    }
 
     // 8. Add an event listener for the UPS phone number input.
     upsPhoneNumberInput.addEventListener('input', () => {
