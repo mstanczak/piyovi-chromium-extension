@@ -162,84 +162,84 @@ const autoPackAll = () => {
     }
 };
 
+/**
+ * Populates the phone number field with a default value if the carrier is UPS and the field is empty.
+ */
+const populateUpsPhoneNumber = (defaultPhoneNumber) => {
+    // Use a specific selector for the carrier's displayed value.
+    const carrierDisplay = document.querySelector('ng-select[formcontrolname="CompanyCarrier_Id"] .ng-value-label');
 
-const observeDOMChanges = (rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled, autoPackEnabled) => {
-    // The MutationObserver will watch for changes in the entire document body.
+    // Check if the displayed carrier is 'UPS'.
+    if (carrierDisplay && carrierDisplay.textContent.trim() === 'UPS') {
+        // Find the phone number input field.
+        const phoneInput = document.querySelector('input[formcontrolname="PhoneNumber1"]');
+
+        // Check if the phone number field exists and is empty.
+        if (phoneInput && phoneInput.value.trim() === '') {
+            console.log(`Piyovi Enhancement Suite: Setting UPS phone number to ${defaultPhoneNumber}.`);
+            phoneInput.value = defaultPhoneNumber;
+
+            // Dispatch an 'input' event to ensure Angular recognizes the change.
+            // This is crucial for frameworks like Angular to detect the programmatic change.
+            const event = new Event('input', { bubbles: true });
+            phoneInput.dispatchEvent(event);
+        }
+    }
+};
+
+
+const observeDOMChanges = (settings) => {
     const targetNode = document.body;
-
-    // Configuration for the observer: we care about child nodes being added or removed.
     const config = { childList: true, subtree: true };
 
-    // Callback function to execute when mutations are observed.
     const callback = (mutationsList, observer) => {
-        // We are looking for added nodes that might be the rows/elements we want to modify.
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                // If new nodes are added, re-run our modification logic based on the settings.
-                if (rowHighlightingEnabled) {
-                    highlightRows();
-                }
-                if(repositioningEnabled){
-                    repositionNotesBox();
-                }
-                if (notesHighlightingEnabled) {
-                    stylePopulatedNotes();
-                }
-                if (packAllProminentEnabled) {
-                    prominentPackAll();
-                }
-                if (autoPackEnabled) {
-                    autoPackAll();
-                }
-                // We only need to run this once per batch of mutations, so we can break.
+                if (settings.isHighlightingEnabled) highlightRows();
+                if (settings.isRepositioningEnabled) repositionNotesBox();
+                if (settings.isNotesHighlightEnabled) stylePopulatedNotes();
+                if (settings.isPackAllProminent) prominentPackAll();
+                if (settings.isAutoPackEnabled) autoPackAll();
+                if (settings.isUpsPhoneEnabled) populateUpsPhoneNumber(settings.upsPhoneNumber);
                 break;
             }
         }
     };
 
-    // Create an observer instance linked to the callback function.
     const observer = new MutationObserver(callback);
-
-    // Start observing the target node for configured mutations.
     observer.observe(targetNode, config);
 };
 
 
 // Main execution block for the content script.
-// First, check the stored setting to see if the features are enabled.
-chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled'], (data) => {
-    // Determine if each feature is enabled, defaulting to true/false as appropriate.
-    const rowHighlightingEnabled = data.isHighlightingEnabled !== false;
-    const notesHighlightingEnabled = data.isNotesHighlightEnabled !== false;
-    const repositioningEnabled = data.isRepositioningEnabled !== false;
-    const packAllProminentEnabled = data.isPackAllProminent !== false;
-    const autoPackEnabled = !!data.isAutoPackEnabled; // Default to false
-
+chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (settings) => {
+    // Set default values for any settings that might be undefined.
+    const defaults = {
+        isHighlightingEnabled: true,
+        isNotesHighlightEnabled: true,
+        isRepositioningEnabled: true,
+        isPackAllProminent: true,
+        isAutoPackEnabled: false,
+        isUpsPhoneEnabled: true,
+        upsPhoneNumber: '111-111-1111'
+    };
+    const activeSettings = { ...defaults, ...settings };
 
     // Run initial functions based on settings.
-    if (rowHighlightingEnabled) {
-        highlightRows();
-    }
-    if(repositioningEnabled){
-        repositionNotesBox();
-    }
-    if (notesHighlightingEnabled) {
-        stylePopulatedNotes();
-    }
-    if (packAllProminentEnabled) {
-        prominentPackAll();
-    }
+    if (activeSettings.isHighlightingEnabled) highlightRows();
+    if (activeSettings.isRepositioningEnabled) repositionNotesBox();
+    if (activeSettings.isNotesHighlightEnabled) stylePopulatedNotes();
+    if (activeSettings.isPackAllProminent) prominentPackAll();
+    // No initial run for auto-pack or phone number as they depend on dynamic conditions.
 
-    // Only set up the observer if at least one feature is active.
-    if (rowHighlightingEnabled || notesHighlightingEnabled || repositioningEnabled || packAllProminentEnabled || autoPackEnabled) {
-        observeDOMChanges(rowHighlightingEnabled, notesHighlightingEnabled, repositioningEnabled, packAllProminentEnabled, autoPackEnabled);
-    }
+    // Set up the observer if any feature that depends on it is active.
+    observeDOMChanges(activeSettings);
 });
 
 // Listen for changes from the options page.
-// If the user toggles a feature, this will reload the page to apply/remove the modifications.
 chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === 'sync' && (changes.isHighlightingEnabled || changes.isNotesHighlightEnabled || changes.isRepositioningEnabled || changes.isPackAllProminent || changes.isAutoPackEnabled)) {
+    if (namespace === 'sync') {
+        // A simple reload is the most reliable way to apply all state changes.
         window.location.reload();
     }
 });
