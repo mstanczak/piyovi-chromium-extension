@@ -8,9 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const repositioningToggle = document.getElementById('enable-repositioning-toggle');
     const packAllToggle = document.getElementById('enable-pack-all-toggle');
     const autoPackToggle = document.getElementById('enable-auto-pack-toggle'); // New toggle
+    const upsPhoneToggle = document.getElementById('enable-ups-phone-toggle');
+    const upsPhoneNumberInput = document.getElementById('ups-phone-number-input');
 
     // 1. Load the saved preferences when the options page is opened.
-    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled'], (data) => {
+    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (data) => {
         // Set state for the dark mode toggle.
         if (data.isDarkModeEnabled) {
             darkModeToggle.checked = true;
@@ -31,6 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Set state for the new auto pack toggle (default to false).
         autoPackToggle.checked = !!data.isAutoPackEnabled;
+
+        // Set state for the UPS phone toggle.
+        upsPhoneToggle.checked = data.isUpsPhoneEnabled !== false;
+
+        // Set the value for the UPS phone number input.
+        upsPhoneNumberInput.value = data.upsPhoneNumber || "111-111-1111";
     });
 
     // 2. Add an event listener to the dark mode toggle.
@@ -79,6 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEnabled = autoPackToggle.checked;
         chrome.storage.sync.set({ isAutoPackEnabled: isEnabled }, () => {
             console.log('Auto Pack All preference saved:', isEnabled);
+        });
+    });
+
+    // 7. Add an event listener for the UPS phone toggle.
+    upsPhoneToggle.addEventListener('change', () => {
+        const isEnabled = upsPhoneToggle.checked;
+        chrome.storage.sync.set({ isUpsPhoneEnabled: isEnabled }, () => {
+            console.log('UPS phone preference saved:', isEnabled);
+        });
+    });
+
+    // 8. Add an event listener for the UPS phone number input.
+    upsPhoneNumberInput.addEventListener('input', () => {
+        const phoneNumber = upsPhoneNumberInput.value;
+        chrome.storage.sync.set({ upsPhoneNumber: phoneNumber }, () => {
+            console.log('UPS phone number saved:', phoneNumber);
         });
     });
 });
