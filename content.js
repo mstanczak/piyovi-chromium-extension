@@ -106,61 +106,6 @@ const stylePopulatedNotes = () => {
     }
 };
 
-/**
- * Makes the "Pack all" button more prominent and hides other packing-related buttons.
- */
-const prominentPackAll = () => {
-    const packAllButton = document.querySelector('button[ngbtooltip="Pack all"]');
-    if (packAllButton) {
-        // Make the "Pack all" button bigger and more prominent.
-        packAllButton.classList.remove('btn-sm', 'btn-outline-secondary', 'btn-primary');
-        packAllButton.classList.add('prominent-pack-all');
-
-        // Find the parent fieldset to locate sibling buttons.
-        const fieldset = packAllButton.closest('fieldset');
-        if (fieldset) {
-            // Hide other buttons within the same fieldset.
-            const buttonsToHide = fieldset.querySelectorAll('button:not([ngbtooltip="Pack all"])');
-            buttonsToHide.forEach(button => {
-                button.style.display = 'none';
-            });
-        }
-    }
-};
-
-/**
- * Automatically clicks the "Pack all" button when conditions are met.
- * This is triggered when a package's items are loaded into the product grid,
- * but before they have been packed into the package grid below it.
- */
-const autoPackAll = () => {
-    // Select the "Pack all" button.
-    const packAllButton = document.querySelector('button[ngbtooltip="Pack all"]');
-
-    // Find the product grid (top) and package grid (bottom).
-    const productGrid = document.querySelector('.tms-shipment-product');
-    const packageGrid = document.querySelector('.py-shipment-package-grid');
-
-    if (!packAllButton || !productGrid || !packageGrid) {
-        // If essential elements aren't on the page, do nothing.
-        return;
-    }
-
-    // Check for data rows in the product grid (top grid).
-    const productGridRows = productGrid.querySelectorAll('.ag-row:not(.ag-row-pinned)');
-
-    // Check for data rows in the package grid (bottom grid).
-    const packageGridRows = packageGrid.querySelectorAll('.ag-row:not(.ag-row-pinned)');
-
-    // Conditions to trigger the click:
-    // 1. The "Pack all" button must be present.
-    // 2. The product grid must have items.
-    // 3. The package grid must be empty (meaning we haven't packed yet).
-    if (packAllButton && productGridRows.length > 0 && packageGridRows.length === 0) {
-        console.log('Piyovi Enhancement Suite: Auto-clicking "Pack all".');
-        packAllButton.click();
-    }
-};
 
 /**
  * Populates the phone number field with a default value if the carrier is UPS and the field is empty.
@@ -198,8 +143,6 @@ const observeDOMChanges = (settings) => {
                 if (settings.isHighlightingEnabled) highlightRows();
                 if (settings.isRepositioningEnabled) repositionNotesBox();
                 if (settings.isNotesHighlightEnabled) stylePopulatedNotes();
-                if (settings.isPackAllProminent) prominentPackAll();
-                if (settings.isAutoPackEnabled) autoPackAll();
                 if (settings.isUpsPhoneEnabled) populateUpsPhoneNumber(settings.upsPhoneNumber);
                 break;
             }
@@ -212,14 +155,12 @@ const observeDOMChanges = (settings) => {
 
 
 // Main execution block for the content script.
-chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (settings) => {
+chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (settings) => {
     // Set default values for any settings that might be undefined.
     const defaults = {
         isHighlightingEnabled: true,
         isNotesHighlightEnabled: true,
         isRepositioningEnabled: true,
-        isPackAllProminent: true,
-        isAutoPackEnabled: false,
         isUpsPhoneEnabled: true,
         upsPhoneNumber: '111-111-1111'
     };
@@ -229,7 +170,6 @@ chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'is
     if (activeSettings.isHighlightingEnabled) highlightRows();
     if (activeSettings.isRepositioningEnabled) repositionNotesBox();
     if (activeSettings.isNotesHighlightEnabled) stylePopulatedNotes();
-    if (activeSettings.isPackAllProminent) prominentPackAll();
     // No initial run for auto-pack or phone number as they depend on dynamic conditions.
 
     // Set up the observer if any feature that depends on it is active.

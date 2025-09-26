@@ -7,8 +7,6 @@ chrome.runtime.onInstalled.addListener(() => {
     isHighlightingEnabled: true,
     isNotesHighlightEnabled: true,
     isRepositioningEnabled: true,
-    isPackAllProminent: true,
-    isAutoPackEnabled: false, // Default new feature to off
     isUpsPhoneEnabled: true,
     upsPhoneNumber: "111-111-1111"
   });

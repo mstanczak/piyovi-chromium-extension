@@ -6,13 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const highlightingToggle = document.getElementById('enable-highlighting-toggle');
     const notesHighlightToggle = document.getElementById('enable-notes-highlight-toggle');
     const repositioningToggle = document.getElementById('enable-repositioning-toggle');
-    const packAllToggle = document.getElementById('enable-pack-all-toggle');
-    const autoPackToggle = document.getElementById('enable-auto-pack-toggle'); // New toggle
     const upsPhoneToggle = document.getElementById('enable-ups-phone-toggle');
     const upsPhoneNumberInput = document.getElementById('ups-phone-number-input');
 
     // 1. Load the saved preferences when the options page is opened.
-    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isPackAllProminent', 'isAutoPackEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (data) => {
+    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (data) => {
         // Set state for the dark mode toggle.
         if (data.isDarkModeEnabled) {
             darkModeToggle.checked = true;
@@ -27,12 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set state for the new repositioning toggle.
         repositioningToggle.checked = data.isRepositioningEnabled !== false;
-
-        // Set state for the pack all toggle.
-        packAllToggle.checked = data.isPackAllProminent !== false;
-        
-        // Set state for the new auto pack toggle (default to false).
-        autoPackToggle.checked = !!data.isAutoPackEnabled;
 
         // Set state for the UPS phone toggle.
         upsPhoneToggle.checked = data.isUpsPhoneEnabled !== false;
@@ -74,22 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEnabled = repositioningToggle.checked;
         chrome.storage.sync.set({ isRepositioningEnabled: isEnabled }, () => {
             console.log('Repositioning preference saved:', isEnabled);
-        });
-    });
-
-    // 5. Add an event listener for the pack all toggle.
-    packAllToggle.addEventListener('change', () => {
-        const isEnabled = packAllToggle.checked;
-        chrome.storage.sync.set({ isPackAllProminent: isEnabled }, () => {
-            console.log('Prominent pack all preference saved:', isEnabled);
-        });
-    });
-    
-    // 6. Add an event listener for the new auto pack toggle.
-    autoPackToggle.addEventListener('change', () => {
-        const isEnabled = autoPackToggle.checked;
-        chrome.storage.sync.set({ isAutoPackEnabled: isEnabled }, () => {
-            console.log('Auto Pack All preference saved:', isEnabled);
         });
     });
 
