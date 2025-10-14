@@ -108,20 +108,21 @@ const stylePopulatedNotes = () => {
 
 
 /**
- * Populates the phone number field with a default value if the carrier is UPS and the field is empty.
+ * Populates the phone number field with a default value if the carrier is UPS or FedEx and the field is empty.
  */
-const populateUpsPhoneNumber = (defaultPhoneNumber) => {
+const populateCarrierPhoneNumber = (defaultPhoneNumber) => {
     // Use a specific selector for the carrier's displayed value.
     const carrierDisplay = document.querySelector('ng-select[formcontrolname="CompanyCarrier_Id"] .ng-value-label');
+    const carrierText = carrierDisplay ? carrierDisplay.textContent.trim() : '';
 
-    // Check if the displayed carrier is 'UPS'.
-    if (carrierDisplay && carrierDisplay.textContent.trim() === 'UPS') {
+    // Check if the displayed carrier is 'UPS' or 'FedEx'.
+    if (carrierDisplay && (carrierText === 'UPS' || carrierText === 'FedEx')) {
         // Find the phone number input field.
         const phoneInput = document.querySelector('input[formcontrolname="PhoneNumber1"]');
 
         // Check if the phone number field exists and is empty.
         if (phoneInput && phoneInput.value.trim() === '') {
-            console.log(`Piyovi Enhancement Suite: Setting UPS phone number to ${defaultPhoneNumber}.`);
+            console.log(`Piyovi Enhancement Suite: Setting carrier phone number to ${defaultPhoneNumber}.`);
             phoneInput.value = defaultPhoneNumber;
 
             // Dispatch an 'input' event to ensure Angular recognizes the change.
@@ -143,7 +144,7 @@ const observeDOMChanges = (settings) => {
                 if (settings.isHighlightingEnabled) highlightRows();
                 if (settings.isRepositioningEnabled) repositionNotesBox();
                 if (settings.isNotesHighlightEnabled) stylePopulatedNotes();
-                if (settings.isUpsPhoneEnabled) populateUpsPhoneNumber(settings.upsPhoneNumber);
+                if (settings.isCarrierPhoneEnabled) populateCarrierPhoneNumber(settings.carrierPhoneNumber);
                 break;
             }
         }
@@ -155,14 +156,14 @@ const observeDOMChanges = (settings) => {
 
 
 // Main execution block for the content script.
-chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (settings) => {
+chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isCarrierPhoneEnabled', 'carrierPhoneNumber'], (settings) => {
     // Set default values for any settings that might be undefined.
     const defaults = {
         isHighlightingEnabled: true,
         isNotesHighlightEnabled: true,
         isRepositioningEnabled: true,
-        isUpsPhoneEnabled: true,
-        upsPhoneNumber: '111-111-1111'
+        isCarrierPhoneEnabled: true,
+        carrierPhoneNumber: '111-111-1111'
     };
     const activeSettings = { ...defaults, ...settings };
 
