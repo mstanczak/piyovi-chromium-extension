@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const highlightingToggle = document.getElementById('enable-highlighting-toggle');
     const notesHighlightToggle = document.getElementById('enable-notes-highlight-toggle');
     const repositioningToggle = document.getElementById('enable-repositioning-toggle');
-    const upsPhoneToggle = document.getElementById('enable-ups-phone-toggle');
-    const upsPhoneNumberInput = document.getElementById('ups-phone-number-input');
+    const carrierPhoneToggle = document.getElementById('enable-carrier-phone-toggle');
+    const carrierPhoneNumberInput = document.getElementById('carrier-phone-number-input');
 
     // 1. Load the saved preferences when the options page is opened.
-    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isUpsPhoneEnabled', 'upsPhoneNumber'], (data) => {
+    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isCarrierPhoneEnabled', 'carrierPhoneNumber'], (data) => {
         // Set state for the dark mode toggle.
         if (data.isDarkModeEnabled) {
             darkModeToggle.checked = true;
@@ -26,11 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set state for the new repositioning toggle.
         repositioningToggle.checked = data.isRepositioningEnabled !== false;
 
-        // Set state for the UPS phone toggle.
-        upsPhoneToggle.checked = data.isUpsPhoneEnabled !== false;
+        // Set state for the carrier phone toggle.
+        carrierPhoneToggle.checked = data.isCarrierPhoneEnabled !== false;
 
-        // Set the value for the UPS phone number input.
-        upsPhoneNumberInput.value = data.upsPhoneNumber || "111-111-1111";
+        // Set the value for the carrier phone number input.
+        carrierPhoneNumberInput.value = data.carrierPhoneNumber || "111-111-1111";
 
         // Toggle the visibility of the custom phone container based on the saved state.
         toggleCustomPhoneContainer();
@@ -69,25 +69,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 7. Add an event listener for the UPS phone toggle.
-    upsPhoneToggle.addEventListener('change', () => {
-        const isEnabled = upsPhoneToggle.checked;
-        chrome.storage.sync.set({ isUpsPhoneEnabled: isEnabled }, () => {
-            console.log('UPS phone preference saved:', isEnabled);
+    // 7. Add an event listener for the carrier phone toggle.
+    carrierPhoneToggle.addEventListener('change', () => {
+        const isEnabled = carrierPhoneToggle.checked;
+        chrome.storage.sync.set({ isCarrierPhoneEnabled: isEnabled }, () => {
+            console.log('Carrier phone preference saved:', isEnabled);
         });
         toggleCustomPhoneContainer();
     });
 
     function toggleCustomPhoneContainer() {
-        const container = document.getElementById('custom-ups-phone-container');
-        container.style.display = upsPhoneToggle.checked ? 'flex' : 'none';
+        const container = document.getElementById('custom-carrier-phone-container');
+        container.style.display = carrierPhoneToggle.checked ? 'flex' : 'none';
     }
 
-    // 8. Add an event listener for the UPS phone number input.
-    upsPhoneNumberInput.addEventListener('input', () => {
-        const phoneNumber = upsPhoneNumberInput.value;
-        chrome.storage.sync.set({ upsPhoneNumber: phoneNumber }, () => {
-            console.log('UPS phone number saved:', phoneNumber);
+    // 8. Add an event listener for the carrier phone number input.
+    carrierPhoneNumberInput.addEventListener('input', () => {
+        const phoneNumber = carrierPhoneNumberInput.value;
+        chrome.storage.sync.set({ carrierPhoneNumber: phoneNumber }, () => {
+            console.log('Carrier phone number saved:', phoneNumber);
         });
     });
 });
