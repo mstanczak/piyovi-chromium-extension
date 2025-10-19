@@ -8,9 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const repositioningToggle = document.getElementById('enable-repositioning-toggle');
     const carrierPhoneToggle = document.getElementById('enable-carrier-phone-toggle');
     const carrierPhoneNumberInput = document.getElementById('carrier-phone-number-input');
+    const address3Toggle = document.getElementById('enable-address3-toggle');
 
     // 1. Load the saved preferences when the options page is opened.
-    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isCarrierPhoneEnabled', 'carrierPhoneNumber'], (data) => {
+    chrome.storage.sync.get(['isDarkModeEnabled', 'isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isCarrierPhoneEnabled', 'carrierPhoneNumber', 'isAddress3Enabled'], (data) => {
         // Set state for the dark mode toggle.
         if (data.isDarkModeEnabled) {
             darkModeToggle.checked = true;
@@ -28,6 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set state for the carrier phone toggle.
         carrierPhoneToggle.checked = data.isCarrierPhoneEnabled !== false;
+
+        // Set state for the address 3 toggle.
+        address3Toggle.checked = data.isAddress3Enabled === true;
 
         // Set the value for the carrier phone number input.
         carrierPhoneNumberInput.value = data.carrierPhoneNumber || "111-111-1111";
@@ -66,6 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEnabled = repositioningToggle.checked;
         chrome.storage.sync.set({ isRepositioningEnabled: isEnabled }, () => {
             console.log('Repositioning preference saved:', isEnabled);
+        });
+    });
+
+    // 5. Add an event listener for the address 3 toggle.
+    address3Toggle.addEventListener('change', () => {
+        const isEnabled = address3Toggle.checked;
+        chrome.storage.sync.set({ isAddress3Enabled: isEnabled }, () => {
+            console.log('Address 3 splitting preference saved:', isEnabled);
         });
     });
 

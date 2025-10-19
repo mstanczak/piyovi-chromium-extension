@@ -133,6 +133,37 @@ const populateCarrierPhoneNumber = (defaultPhoneNumber) => {
     }
 };
 
+const splitAddressLine3 = () => {
+    const address2Group = document.querySelector('py-form-group-item[label="common.field.address2"]');
+    if (!address2Group) return;
+
+    const address2Input = address2Group.querySelector('input');
+    if (!address2Input || !address2Input.value.includes('|')) return;
+
+    const [address2, address3] = address2Input.value.split('|').map(s => s.trim());
+    address2Input.value = address2;
+
+    let address3Group = document.querySelector('py-form-group-item[label="common.field.address3"]');
+    if (!address3Group) {
+        address3Group = address2Group.cloneNode(true);
+        const label = address3Group.querySelector('label span');
+        if (label) {
+            label.textContent = 'Address 3';
+        }
+        address3Group.setAttribute('label', 'common.field.address3');
+        const input = address3Group.querySelector('input');
+        if (input) {
+            input.setAttribute('formcontrolname', 'Address3');
+        }
+        address2Group.parentNode.insertBefore(address3Group, address2Group.nextSibling);
+    }
+
+    const address3Input = address3Group.querySelector('input');
+    if (address3Input) {
+        address3Input.value = address3;
+    }
+};
+
 
 const observeDOMChanges = (settings) => {
     const targetNode = document.body;
@@ -145,6 +176,7 @@ const observeDOMChanges = (settings) => {
                 if (settings.isRepositioningEnabled) repositionNotesBox();
                 if (settings.isNotesHighlightEnabled) stylePopulatedNotes();
                 if (settings.isCarrierPhoneEnabled) populateCarrierPhoneNumber(settings.carrierPhoneNumber);
+                if (settings.isAddress3Enabled) splitAddressLine3();
                 break;
             }
         }
@@ -156,14 +188,15 @@ const observeDOMChanges = (settings) => {
 
 
 // Main execution block for the content script.
-chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isCarrierPhoneEnabled', 'carrierPhoneNumber'], (settings) => {
+chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'isRepositioningEnabled', 'isCarrierPhoneEnabled', 'carrierPhoneNumber', 'isAddress3Enabled'], (settings) => {
     // Set default values for any settings that might be undefined.
     const defaults = {
         isHighlightingEnabled: true,
         isNotesHighlightEnabled: true,
         isRepositioningEnabled: true,
         isCarrierPhoneEnabled: true,
-        carrierPhoneNumber: '111-111-1111'
+        carrierPhoneNumber: '111-111-1111',
+        isAddress3Enabled: false
     };
     const activeSettings = { ...defaults, ...settings };
 
@@ -171,6 +204,7 @@ chrome.storage.sync.get(['isHighlightingEnabled', 'isNotesHighlightEnabled', 'is
     if (activeSettings.isHighlightingEnabled) highlightRows();
     if (activeSettings.isRepositioningEnabled) repositionNotesBox();
     if (activeSettings.isNotesHighlightEnabled) stylePopulatedNotes();
+    if (activeSettings.isAddress3Enabled) splitAddressLine3();
     // No initial run for auto-pack or phone number as they depend on dynamic conditions.
 
     // Set up the observer if any feature that depends on it is active.
