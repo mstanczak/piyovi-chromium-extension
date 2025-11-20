@@ -37,7 +37,7 @@ const repositionNotesBox = () => {
     const notesBox = document.querySelector('py-form-group-item[label="common.field.notes"]');
 
     // Select the 'Tax ID' element, which will be our anchor point.
-    const taxIdBox = document.querySelector('py-form-group-item[label="Tax ID"]');
+    const taxIdBox = document.querySelector('py-form-group-item[label="common.field.taxid"]');
 
     // Check if both elements exist on the page before trying to move them.
     // This also prevents the observer from causing unnecessary DOM manipulations if the element is already moved.
@@ -84,7 +84,8 @@ const stylePopulatedNotes = () => {
         // Apply even margins as requested for a more balanced look.
         formGroup.style.marginTop = '8px';
         formGroup.style.marginBottom = '8px';
-        formGroup.style.fontSize = '13px';
+        formGroup.style.fontSize = '18px';
+        formGroup.style.fontWeight = 'bold';
 
     } else {
         // Remove styles if there's no content to revert to the default appearance.
